@@ -11,6 +11,7 @@ import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.players.NameAndId;
 import net.minecraft.world.item.ItemStack;
 
 public final class ModCommands {
@@ -22,6 +23,7 @@ public final class ModCommands {
 								Commands.CommandSelection environment) {
 		dispatcher.register(
 			Commands.literal("culiatumpvp")
+				.requires(ModCommands::isAdminSource)
 				.then(Commands.literal("radar")
 					.then(Commands.literal("give")
 						.then(Commands.argument("player", EntityArgument.player())
@@ -88,6 +90,18 @@ public final class ModCommands {
 		Component status = RadarManager.buildStatusMessage(hunter);
 		context.getSource().sendSuccess(() -> status, false);
 		return 1;
+	}
+
+	private static boolean isAdminSource(CommandSourceStack source) {
+		if (source.getEntity() == null) {
+			return true;
+		}
+
+		if (source.getEntity() instanceof ServerPlayer player) {
+			return source.getServer().getPlayerList().isOp(new NameAndId(player.getGameProfile()));
+		}
+
+		return false;
 	}
 
 }
