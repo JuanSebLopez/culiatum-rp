@@ -1,6 +1,6 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "culiatum_pvp:item/recall_potion"
+    "model": "culiatum_rp:item/recall_potion"
   }
 }

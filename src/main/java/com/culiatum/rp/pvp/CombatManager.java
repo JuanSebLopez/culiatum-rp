@@ -1,6 +1,6 @@
-package com.culiatum.pvp.pvp;
+package com.culiatum.rp.pvp;
 
-import com.culiatum.pvp.ModConfig;
+import com.culiatum.rp.ModConfig;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;

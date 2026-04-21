@@ -1,4 +1,4 @@
-package com.culiatum.pvp.radar;
+package com.culiatum.rp.radar;
 
 import java.util.UUID;
 

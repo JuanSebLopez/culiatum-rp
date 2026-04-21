@@ -1,6 +1,6 @@
-package com.culiatum.pvp.item;
+package com.culiatum.rp.item;
 
-import com.culiatum.pvp.CuliatumPvpMod;
+import com.culiatum.rp.CuliatumRpMod;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -23,13 +23,13 @@ public final class ModItems {
 	}
 
 	private static Item.Properties createProperties(String path) {
-		Identifier id = Identifier.fromNamespaceAndPath(CuliatumPvpMod.MOD_ID, path);
+		Identifier id = Identifier.fromNamespaceAndPath(CuliatumRpMod.MOD_ID, path);
 		ResourceKey<Item> resourceKey = ResourceKey.create(Registries.ITEM, id);
 		return new Item.Properties().setId(resourceKey);
 	}
 
 	private static Item register(String path, Item item) {
-		Identifier id = Identifier.fromNamespaceAndPath(CuliatumPvpMod.MOD_ID, path);
+		Identifier id = Identifier.fromNamespaceAndPath(CuliatumRpMod.MOD_ID, path);
 		return Registry.register(BuiltInRegistries.ITEM, id, item);
 	}
 

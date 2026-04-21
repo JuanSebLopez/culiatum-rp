@@ -1,6 +1,6 @@
 {
   "required": true,
-  "package": "com.culiatum.pvp.mixin",
+  "package": "com.culiatum.rp.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
     "PotionBrewingMixin",

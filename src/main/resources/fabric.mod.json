@@ -13,15 +13,15 @@
 		"issues": "https://github.com/JuanSebLopez/culiatum-rp/issues"
 	},
 	"license": "CC0-1.0",
-	"icon": "assets/culiatum_pvp/icon.png",
+	"icon": "assets/culiatum_rp/icon.png",
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-			"com.culiatum.pvp.CuliatumPvpMod"
+			"com.culiatum.rp.CuliatumRpMod"
 		]
 	},
 	"mixins": [
-		"culiatum-pvp.mixins.json"
+		"culiatum-rp.mixins.json"
 	],
 	"depends": {
 		"fabricloader": ">=0.18.4",

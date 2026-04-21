@@ -1,7 +1,7 @@
-package com.culiatum.pvp.mixin.support;
+package com.culiatum.rp.mixin.support;
 
-import com.culiatum.pvp.ModConfig;
-import com.culiatum.pvp.pvp.CombatManager;
+import com.culiatum.rp.ModConfig;
+import com.culiatum.rp.pvp.CombatManager;
 import net.minecraft.server.level.ServerPlayer;
 
 public final class CommandBlocker {

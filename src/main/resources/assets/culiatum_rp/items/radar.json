@@ -1,6 +1,6 @@
 {
   "model": {
     "type": "minecraft:model",
-    "model": "culiatum_pvp:item/radar"
+    "model": "culiatum_rp:item/radar"
   }
 }

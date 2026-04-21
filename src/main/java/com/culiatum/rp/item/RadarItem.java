@@ -1,6 +1,6 @@
-package com.culiatum.pvp.item;
+package com.culiatum.rp.item;
 
-import com.culiatum.pvp.radar.RadarManager;
+import com.culiatum.rp.radar.RadarManager;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;

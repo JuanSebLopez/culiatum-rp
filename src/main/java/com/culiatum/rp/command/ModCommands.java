@@ -1,11 +1,11 @@
-package com.culiatum.pvp.command;
+package com.culiatum.rp.command;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
-import com.culiatum.pvp.item.ModItems;
-import com.culiatum.pvp.radar.RadarManager;
+import com.culiatum.rp.item.ModItems;
+import com.culiatum.rp.radar.RadarManager;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.arguments.EntityArgument;
@@ -22,7 +22,7 @@ public final class ModCommands {
 								net.minecraft.commands.CommandBuildContext buildContext,
 								Commands.CommandSelection environment) {
 		dispatcher.register(
-			Commands.literal("culiatumpvp")
+			Commands.literal("culiatumrp")
 				.requires(ModCommands::isAdminSource)
 				.then(Commands.literal("radar")
 					.then(Commands.literal("give")

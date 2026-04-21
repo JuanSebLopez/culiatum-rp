@@ -54,7 +54,7 @@ loom {
 	splitEnvironmentSourceSets()
 
 	mods {
-		"culiatum_pvp" {
+		"culiatum_rp" {
 			sourceSet sourceSets.main
 		}
 	}

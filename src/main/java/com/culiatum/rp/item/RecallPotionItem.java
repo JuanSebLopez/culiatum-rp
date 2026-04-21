@@ -1,6 +1,4 @@
-package com.culiatum.pvp.item;
-
-import com.culiatum.pvp.CuliatumPvpMod;
+package com.culiatum.rp.item;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;

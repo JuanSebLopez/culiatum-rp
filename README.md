@@ -16,7 +16,7 @@
 - A drinkable `Recall Potion` that returns the player to spawn
 - A command-configurable `Radar` item for bounty target assignment
 - Action bar radar feedback with cooldown
-- Basic configuration through `config/culiatum-pvp.properties`
+- Basic configuration through `config/culiatum-rp.properties`
 
 ## Mod Vision
 
@@ -39,10 +39,10 @@ Many item and system properties can be adjusted through commands and configurati
 The command-editable systems currently start with:
 
 ```mcfunction
-/culiatumpvp radar give <player> [count]
-/culiatumpvp radar set <hunter> <target> <minutes> [label]
-/culiatumpvp radar clear <hunter>
-/culiatumpvp radar status <hunter>
+/culiatumrp radar give <player> [count]
+/culiatumrp radar set <hunter> <target> <minutes> [label]
+/culiatumrp radar clear <hunter>
+/culiatumrp radar status <hunter>
 ```
 
 ## Development and Branch Workflow

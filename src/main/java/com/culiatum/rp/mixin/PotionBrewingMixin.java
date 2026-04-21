@@ -1,6 +1,6 @@
-package com.culiatum.pvp.mixin;
+package com.culiatum.rp.mixin;
 
-import com.culiatum.pvp.item.ModItems;
+import com.culiatum.rp.item.ModItems;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;

@@ -1,4 +1,4 @@
-package com.culiatum.pvp;
+package com.culiatum.rp;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,7 +11,7 @@ import java.util.Properties;
 import java.util.Set;
 
 public final class ModConfig {
-	private static final Path CONFIG_PATH = Path.of("config", "culiatum-pvp.properties");
+	private static final Path CONFIG_PATH = Path.of("config", "culiatum-rp.properties");
 
 	private static int combatTagSeconds = 30;
 	private static int radarCooldownSeconds = 5;
@@ -57,7 +57,7 @@ public final class ModConfig {
 				properties.store(outputStream, "Culiatum PvP config");
 			}
 		} catch (IOException exception) {
-			CuliatumPvpMod.LOGGER.error("Failed to load Culiatum PvP configuration.", exception);
+			CuliatumRpMod.LOGGER.error("Failed to load Culiatum RP configuration.", exception);
 		}
 	}
 
