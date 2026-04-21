@@ -1,4 +1,4 @@
-package com.culiatum.rp.mixin.support;
+package com.culiatum.rp.util;
 
 import com.culiatum.rp.ModConfig;
 import com.culiatum.rp.pvp.CombatManager;

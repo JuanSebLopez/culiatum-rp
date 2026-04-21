@@ -1,6 +1,6 @@
 package com.culiatum.rp.mixin;
 
-import com.culiatum.rp.mixin.support.CommandBlocker;
+import com.culiatum.rp.util.CommandBlocker;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ServerboundChatCommandPacket;
 import net.minecraft.network.protocol.game.ServerboundChatCommandSignedPacket;
