@@ -1,0 +1,43 @@
+{
+	"schemaVersion": 1,
+	"id": "${mod_id}",
+	"version": "${version}",
+	"name": "${mod_name}",
+	"description": "Alpha del sistema PvP de Culiatum con bloqueo de teleports en combate, recall potion y radar configurable para misiones de cazarecompensas.",
+	"authors": [
+		"${mod_author}"
+	],
+	"contact": {
+		"homepage": "https://github.com/JuanSebLopez/culiatum-rp",
+		"sources": "https://github.com/JuanSebLopez/culiatum-rp",
+		"issues": "https://github.com/JuanSebLopez/culiatum-rp/issues"
+	},
+	"license": "CC0-1.0",
+	"icon": "assets/culiatum_pvp/icon.png",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.culiatum.pvp.CuliatumPvpMod"
+		]
+	},
+	"mixins": [
+		"culiatum-pvp.mixins.json"
+	],
+	"depends": {
+		"fabricloader": ">=0.18.4",
+		"minecraft": "~1.21.11",
+		"java": ">=21",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"modmenu": "*"
+	},
+	"custom": {
+		"modmenu": {
+			"links": {
+				"modmenu.source": "https://github.com/JuanSebLopez/culiatum-rp",
+				"modmenu.issues": "https://github.com/JuanSebLopez/culiatum-rp/issues"
+			}
+		}
+	}
+}
