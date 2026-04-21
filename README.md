@@ -65,5 +65,5 @@ For new work, the preferred flow is to develop from dedicated `worktrees` and me
 The remapped jar is generated at:
 
 ```text
-build/libs/culiatum-pvp-0.1.0.jar
+build/libs/culiatum-rp-0.1.0.jar
 ```
