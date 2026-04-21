@@ -22,7 +22,7 @@ public final class CuliatumPvpMod implements ModInitializer {
 		ModItems.register();
 		registerEvents();
 		CommandRegistrationCallback.EVENT.register(ModCommands::register);
-		LOGGER.info("Culiatum PvP listo. Combate, recall y radar registrados.");
+		LOGGER.info("Culiatum PvP initialized. Combat, recall, and radar systems registered.");
 	}
 
 	private static void registerEvents() {

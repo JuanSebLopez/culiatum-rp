@@ -2,7 +2,7 @@
 
 ## 0.1.0
 
-Primera release alpha de `Culiatum RP`.
+First alpha release of `Culiatum RP`.
 
 - Added base PvP system for Fabric `1.21.11`
 - Added combat tagging on player-vs-player damage

@@ -57,7 +57,7 @@ public final class ModConfig {
 				properties.store(outputStream, "Culiatum PvP config");
 			}
 		} catch (IOException exception) {
-			CuliatumPvpMod.LOGGER.error("No se pudo cargar la configuracion de Culiatum PvP.", exception);
+			CuliatumPvpMod.LOGGER.error("Failed to load Culiatum PvP configuration.", exception);
 		}
 	}
 

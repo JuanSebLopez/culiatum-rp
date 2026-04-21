@@ -38,7 +38,7 @@ public final class RecallPotionItem extends Item {
 
 		player.teleportTo(overworld, spawnPos.getX() + 0.5D, spawnPos.getY(), spawnPos.getZ() + 0.5D, Set.of(), spawnAngle, 0.0F, false);
 		player.resetFallDistance();
-		player.displayClientMessage(Component.literal("La Recall Potion te devolvio al spawn."), true);
+		player.displayClientMessage(Component.literal("The Recall Potion returned you to spawn."), true);
 		overworld.playSound(null, spawnPos, SoundEvents.ENDERMAN_TELEPORT, player.getSoundSource(), 1.0F, 1.0F);
 
 		if (!player.getAbilities().instabuild) {

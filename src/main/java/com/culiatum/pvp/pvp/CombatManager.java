@@ -66,7 +66,7 @@ public final class CombatManager {
 		COMBAT_TAGS.put(player.getUUID(), expiresAt);
 
 		if (!wasTagged) {
-			player.displayClientMessage(Component.literal("Entraste en combate. Teleports bloqueados temporalmente."), true);
+			player.displayClientMessage(Component.literal("You entered combat. Teleport commands are temporarily blocked."), true);
 		}
 	}
 

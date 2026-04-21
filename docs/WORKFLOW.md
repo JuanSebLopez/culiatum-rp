@@ -12,7 +12,7 @@
 Recommended flow for future work:
 
 ```powershell
-git worktree add ..\\culiatum-rp-feature-x -b feature/nombre-corto main
+git worktree add ..\\culiatum-rp-feature-x -b feature/short-name main
 ```
 
 After that, develop and review inside the dedicated worktree before merging back into `main`.

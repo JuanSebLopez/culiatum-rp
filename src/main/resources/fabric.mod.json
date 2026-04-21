@@ -3,7 +3,7 @@
 	"id": "${mod_id}",
 	"version": "${version}",
 	"name": "${mod_name}",
-	"description": "Alpha del sistema PvP de Culiatum con bloqueo de teleports en combate, recall potion y radar configurable para misiones de cazarecompensas.",
+	"description": "Alpha release of Culiatum's PvP system with combat teleport blocking, a custom recall potion, and a configurable bounty radar.",
 	"authors": [
 		"${mod_author}"
 	],

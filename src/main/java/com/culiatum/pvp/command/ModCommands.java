@@ -54,7 +54,7 @@ public final class ModCommands {
 			player.drop(stack, false);
 		}
 
-		context.getSource().sendSuccess(() -> Component.literal("Radar entregado a " + player.getName().getString() + "."), true);
+		context.getSource().sendSuccess(() -> Component.literal("Radar given to " + player.getName().getString() + "."), true);
 		return 1;
 	}
 
@@ -73,7 +73,7 @@ public final class ModCommands {
 
 		RadarManager.assignTarget(hunter, target, minutes, label);
 		context.getSource().sendSuccess(() -> Component.literal(
-			"Radar asignado a " + hunter.getName().getString() + " -> " + target.getName().getString() + " por " + minutes + " min."
+			"Radar assigned to " + hunter.getName().getString() + " -> " + target.getName().getString() + " for " + minutes + " min."
 		), true);
 		return 1;
 	}
@@ -81,7 +81,7 @@ public final class ModCommands {
 	private static int clearAssignment(CommandContext<CommandSourceStack> context) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
 		ServerPlayer hunter = EntityArgument.getPlayer(context, "hunter");
 		RadarManager.clearAssignment(hunter.getUUID());
-		context.getSource().sendSuccess(() -> Component.literal("Objetivo removido para " + hunter.getName().getString() + "."), true);
+		context.getSource().sendSuccess(() -> Component.literal("Target cleared for " + hunter.getName().getString() + "."), true);
 		return 1;
 	}
 
