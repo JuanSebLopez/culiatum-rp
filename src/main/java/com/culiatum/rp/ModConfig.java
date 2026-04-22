@@ -13,9 +13,8 @@ import java.util.Set;
 public final class ModConfig {
 	private static final Path CONFIG_PATH = Path.of("config", "culiatum-rp.properties");
 
-	private static int combatTagSeconds = 30;
+	private static int combatTagSeconds = 15;
 	private static int radarCooldownSeconds = 5;
-	private static boolean disableElytra = true;
 	private static Set<String> blockedCommandPrefixes = new LinkedHashSet<>(Arrays.asList(
 		"tpa",
 		"tpaaccept",
@@ -40,17 +39,16 @@ public final class ModConfig {
 				}
 			}
 
-			combatTagSeconds = readInt(properties, "combat_tag_seconds", 30, 5);
+			combatTagSeconds = readInt(properties, "combat_tag_seconds", 15, 5);
 			radarCooldownSeconds = readInt(properties, "radar_cooldown_seconds", 5, 1);
-			disableElytra = readBoolean(properties, "disable_elytra", true);
 			blockedCommandPrefixes = readCommandPrefixes(properties.getProperty(
 				"blocked_command_prefixes",
 				"tpa,tpaaccept,tpaccept,tpadeny,tpdeny,spawn"
 			));
 
+			properties.remove("disable_elytra");
 			properties.setProperty("combat_tag_seconds", Integer.toString(combatTagSeconds));
 			properties.setProperty("radar_cooldown_seconds", Integer.toString(radarCooldownSeconds));
-			properties.setProperty("disable_elytra", Boolean.toString(disableElytra));
 			properties.setProperty("blocked_command_prefixes", String.join(",", blockedCommandPrefixes));
 
 			try (OutputStream outputStream = Files.newOutputStream(CONFIG_PATH)) {
@@ -100,10 +98,6 @@ public final class ModConfig {
 
 	public static int getRadarCooldownSeconds() {
 		return radarCooldownSeconds;
-	}
-
-	public static boolean isElytraDisabled() {
-		return disableElytra;
 	}
 
 	public static Set<String> getBlockedCommandPrefixes() {

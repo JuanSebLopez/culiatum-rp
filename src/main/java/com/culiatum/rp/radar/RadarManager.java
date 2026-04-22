@@ -1,9 +1,12 @@
 package com.culiatum.rp.radar;
 
 import com.culiatum.rp.ModConfig;
+import com.culiatum.rp.item.ModItems;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 
 import java.util.Map;
@@ -18,6 +21,15 @@ public final class RadarManager {
 	}
 
 	public static void initialize() {
+		ServerTickEvents.END_SERVER_TICK.register(server -> {
+			for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+				RadarAssignment assignment = ASSIGNMENTS.get(player.getUUID());
+
+				if (assignment != null && assignment.expiresAt() <= System.currentTimeMillis()) {
+					expireAssignment(player);
+				}
+			}
+		});
 	}
 
 	public static void assignTarget(ServerPlayer hunter, ServerPlayer target, int minutes, String label) {
@@ -41,8 +53,7 @@ public final class RadarManager {
 		}
 
 		if (assignment.expiresAt() <= System.currentTimeMillis()) {
-			clearAssignment(hunter.getUUID());
-			hunter.displayClientMessage(Component.literal("This radar assignment has expired.").withStyle(ChatFormatting.RED), true);
+			expireAssignment(hunter);
 			return;
 		}
 
@@ -87,7 +98,7 @@ public final class RadarManager {
 		long remainingMillis = assignment.expiresAt() - System.currentTimeMillis();
 
 		if (remainingMillis <= 0L) {
-			clearAssignment(hunter.getUUID());
+			expireAssignment(hunter);
 			return Component.literal("This radar assignment has expired.");
 		}
 
@@ -98,5 +109,34 @@ public final class RadarManager {
 
 	private static String readableDimension(Level level) {
 		return level.dimension().identifier().getPath();
+	}
+
+	public static boolean hasRadar(ServerPlayer player) {
+		for (int slot = 0; slot < player.getInventory().getContainerSize(); slot++) {
+			if (player.getInventory().getItem(slot).is(ModItems.RADAR)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	private static void expireAssignment(ServerPlayer hunter) {
+		clearAssignment(hunter.getUUID());
+		removeRadars(hunter);
+		hunter.displayClientMessage(Component.literal("Your radar assignment has expired. The radar was removed.").withStyle(ChatFormatting.RED), false);
+	}
+
+	private static void removeRadars(ServerPlayer player) {
+		for (int slot = 0; slot < player.getInventory().getContainerSize(); slot++) {
+			ItemStack stack = player.getInventory().getItem(slot);
+
+			if (stack.is(ModItems.RADAR)) {
+				player.getInventory().setItem(slot, ItemStack.EMPTY);
+			}
+		}
+
+		player.getInventory().setChanged();
+		player.containerMenu.broadcastChanges();
 	}
 }

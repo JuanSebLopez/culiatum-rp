@@ -1,10 +1,10 @@
 # Culiatum RP
 
-`Culiatum RP` is a server-side Fabric mod for `1.21.11` focused on PvP rules and gameplay systems for the Culiatum server. This first release is an `alpha` intended to establish the core foundation for combat control, limited escape tools, and bounty-style missions.
+`Culiatum RP` is a server-side Fabric mod for `1.21.11` focused on PvP rules and gameplay systems for the Culiatum server. This early `alpha` establishes the core foundation for combat control, limited escape tools, and bounty-style missions.
 
 ## Project Status
 
-- Current version: `0.1.0-alpha`
+- Current version: `0.1.1-alpha`
 - Target loader: `Fabric Loader 0.18.4`
 - Target Java version: `21`
 - Compatible with `Mod Menu` through metadata in `fabric.mod.json`
@@ -12,9 +12,10 @@
 ## What This Alpha Includes
 
 - Combat-time blocking for configured teleport commands
-- Full elytra flight disable
+- Combat tagging for both PvP and hostile mob encounters
 - A drinkable `Recall Potion` that returns the player to spawn
 - A command-configurable `Radar` item for bounty target assignment
+- One-radar-per-player mission flow with automatic expiration cleanup
 - Action bar radar feedback with cooldown
 - Basic configuration through `config/culiatum-rp.properties`
 
@@ -39,7 +40,7 @@ Many item and system properties can be adjusted through commands and configurati
 The command-editable systems currently start with:
 
 ```mcfunction
-/culiatumrp radar give <player> [count]
+/culiatumrp radar give <player>
 /culiatumrp radar set <hunter> <target> <minutes> [label]
 /culiatumrp radar clear <hunter>
 /culiatumrp radar status <hunter>
@@ -65,5 +66,5 @@ For new work, the preferred flow is to develop from dedicated `worktrees` and me
 The remapped jar is generated at:
 
 ```text
-build/libs/culiatum-rp-0.1.0.jar
+build/libs/culiatum-rp-0.1.1.jar
 ```

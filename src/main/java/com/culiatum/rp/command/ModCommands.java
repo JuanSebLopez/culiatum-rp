@@ -27,9 +27,7 @@ public final class ModCommands {
 				.then(Commands.literal("radar")
 					.then(Commands.literal("give")
 						.then(Commands.argument("player", EntityArgument.player())
-							.executes(context -> giveRadar(context, 1))
-							.then(Commands.argument("count", IntegerArgumentType.integer(1, 64))
-								.executes(context -> giveRadar(context, IntegerArgumentType.getInteger(context, "count"))))))
+							.executes(ModCommands::giveRadar)))
 					.then(Commands.literal("set")
 						.then(Commands.argument("hunter", EntityArgument.player())
 							.then(Commands.argument("target", EntityArgument.player())
@@ -46,9 +44,15 @@ public final class ModCommands {
 		);
 	}
 
-	private static int giveRadar(CommandContext<CommandSourceStack> context, int count) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+	private static int giveRadar(CommandContext<CommandSourceStack> context) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
 		ServerPlayer player = EntityArgument.getPlayer(context, "player");
-		ItemStack stack = new ItemStack(ModItems.RADAR, count);
+
+		if (RadarManager.hasRadar(player)) {
+			context.getSource().sendFailure(Component.literal(player.getName().getString() + " already has a radar."));
+			return 0;
+		}
+
+		ItemStack stack = new ItemStack(ModItems.RADAR);
 
 		if (!player.addItem(stack)) {
 			player.drop(stack, false);
@@ -70,6 +74,11 @@ public final class ModCommands {
 		ServerPlayer hunter = EntityArgument.getPlayer(context, "hunter");
 		ServerPlayer target = EntityArgument.getPlayer(context, "target");
 		int minutes = IntegerArgumentType.getInteger(context, "minutes");
+
+		if (!RadarManager.hasRadar(hunter)) {
+			context.getSource().sendFailure(Component.literal(hunter.getName().getString() + " does not have a radar in their inventory."));
+			return 0;
+		}
 
 		RadarManager.assignTarget(hunter, target, minutes, label);
 		context.getSource().sendSuccess(() -> Component.literal(

@@ -7,7 +7,6 @@ import com.culiatum.rp.radar.RadarManager;
 import com.culiatum.rp.util.CommandBlocker;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
-import net.fabricmc.fabric.api.entity.event.v1.EntityElytraEvents;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +29,6 @@ public final class CuliatumRpMod implements ModInitializer {
 			CombatManager.handleDamage(entity, source, damageTaken));
 		ServerLivingEntityEvents.AFTER_DEATH.register((entity, source) ->
 			CombatManager.handleDeath(entity, source));
-		EntityElytraEvents.ALLOW.register(entity -> !ModConfig.isElytraDisabled());
 		CommandBlocker.initialize();
 		RadarManager.initialize();
 	}

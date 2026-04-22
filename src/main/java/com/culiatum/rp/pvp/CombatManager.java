@@ -5,7 +5,9 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.projectile.Projectile;
 
 import java.util.Map;
@@ -25,12 +27,15 @@ public final class CombatManager {
 
 		ServerPlayer attacker = getResponsiblePlayer(source);
 
-		if (attacker == null || attacker == victim) {
+		if (attacker != null && attacker != victim) {
+			tag(victim);
+			tag(attacker);
 			return;
 		}
 
-		tag(victim);
-		tag(attacker);
+		if (isHostileMobDamage(source)) {
+			tag(victim);
+		}
 	}
 
 	public static void handleDeath(LivingEntity entity, DamageSource source) {
@@ -68,6 +73,30 @@ public final class CombatManager {
 		if (!wasTagged) {
 			player.displayClientMessage(Component.literal("You entered combat. Teleport commands are temporarily blocked."), true);
 		}
+	}
+
+	private static boolean isHostileMobDamage(DamageSource source) {
+		Entity attacker = source.getEntity();
+
+		if (isHostileMob(attacker)) {
+			return true;
+		}
+
+		Entity directEntity = source.getDirectEntity();
+
+		if (directEntity instanceof Projectile projectile) {
+			return isHostileMob(projectile.getOwner());
+		}
+
+		return isHostileMob(directEntity);
+	}
+
+	private static boolean isHostileMob(Entity entity) {
+		if (!(entity instanceof LivingEntity livingEntity) || entity instanceof ServerPlayer) {
+			return false;
+		}
+
+		return livingEntity instanceof Enemy || entity.getType() == EntityType.GHAST;
 	}
 
 	private static ServerPlayer getResponsiblePlayer(DamageSource source) {
