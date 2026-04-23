@@ -18,6 +18,9 @@
 	"entrypoints": {
 		"main": [
 			"com.culiatum.rp.CuliatumRpMod"
+		],
+		"jei_mod_plugin": [
+			"com.culiatum.rp.compat.jei.CuliatumRpJeiPlugin"
 		]
 	},
 	"mixins": [
@@ -30,6 +33,7 @@
 		"fabric-api": "*"
 	},
 	"suggests": {
+		"jei": "*",
 		"modmenu": "*"
 	},
 	"custom": {

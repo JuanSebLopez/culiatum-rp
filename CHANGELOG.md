@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.3
+
+- Added optional JEI integration for the Recall Potion brewing recipe
+- Registered the Recall Potion brewing recipe in JEI as `awkward potion + nether star`
+- Added JEI plugin metadata and optional compile-time API integration for Fabric `1.21.11`
+
 ## 0.1.2
 
 - Changed the Recall Potion to return players to their personal respawn point when available
