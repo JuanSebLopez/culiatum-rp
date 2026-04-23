@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.2
+
+- Changed the Recall Potion to return players to their personal respawn point when available
+- Added fallback from the Recall Potion to world spawn when no valid personal respawn point exists
+- Added config options to disable vanilla `Villager` trading and `WanderingTrader` trading independently
+
 ## 0.1.1
 
 - Removed all elytra flight restrictions

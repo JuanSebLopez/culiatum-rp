@@ -15,6 +15,8 @@ public final class ModConfig {
 
 	private static int combatTagSeconds = 15;
 	private static int radarCooldownSeconds = 5;
+	private static boolean disableVillagerTrading = false;
+	private static boolean disableWanderingTraderTrading = false;
 	private static Set<String> blockedCommandPrefixes = new LinkedHashSet<>(Arrays.asList(
 		"tpa",
 		"tpaaccept",
@@ -41,6 +43,8 @@ public final class ModConfig {
 
 			combatTagSeconds = readInt(properties, "combat_tag_seconds", 15, 5);
 			radarCooldownSeconds = readInt(properties, "radar_cooldown_seconds", 5, 1);
+			disableVillagerTrading = readBoolean(properties, "disable_villager_trading", false);
+			disableWanderingTraderTrading = readBoolean(properties, "disable_wandering_trader_trading", false);
 			blockedCommandPrefixes = readCommandPrefixes(properties.getProperty(
 				"blocked_command_prefixes",
 				"tpa,tpaaccept,tpaccept,tpadeny,tpdeny,spawn"
@@ -49,6 +53,8 @@ public final class ModConfig {
 			properties.remove("disable_elytra");
 			properties.setProperty("combat_tag_seconds", Integer.toString(combatTagSeconds));
 			properties.setProperty("radar_cooldown_seconds", Integer.toString(radarCooldownSeconds));
+			properties.setProperty("disable_villager_trading", Boolean.toString(disableVillagerTrading));
+			properties.setProperty("disable_wandering_trader_trading", Boolean.toString(disableWanderingTraderTrading));
 			properties.setProperty("blocked_command_prefixes", String.join(",", blockedCommandPrefixes));
 
 			try (OutputStream outputStream = Files.newOutputStream(CONFIG_PATH)) {
@@ -98,6 +104,14 @@ public final class ModConfig {
 
 	public static int getRadarCooldownSeconds() {
 		return radarCooldownSeconds;
+	}
+
+	public static boolean isVillagerTradingDisabled() {
+		return disableVillagerTrading;
+	}
+
+	public static boolean isWanderingTraderTradingDisabled() {
+		return disableWanderingTraderTrading;
 	}
 
 	public static Set<String> getBlockedCommandPrefixes() {

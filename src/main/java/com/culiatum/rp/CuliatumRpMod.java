@@ -5,6 +5,7 @@ import com.culiatum.rp.item.ModItems;
 import com.culiatum.rp.pvp.CombatManager;
 import com.culiatum.rp.radar.RadarManager;
 import com.culiatum.rp.util.CommandBlocker;
+import com.culiatum.rp.util.VillagerTradeBlocker;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
@@ -30,6 +31,7 @@ public final class CuliatumRpMod implements ModInitializer {
 		ServerLivingEntityEvents.AFTER_DEATH.register((entity, source) ->
 			CombatManager.handleDeath(entity, source));
 		CommandBlocker.initialize();
+		VillagerTradeBlocker.initialize();
 		RadarManager.initialize();
 	}
 }
