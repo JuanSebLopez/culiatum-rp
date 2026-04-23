@@ -10,6 +10,12 @@ import net.minecraft.world.entity.npc.villager.Villager;
 import net.minecraft.world.entity.npc.wanderingtrader.WanderingTrader;
 
 public final class VillagerTradeBlocker {
+	private static final String EASY_NPC_PACKAGE_PREFIX = "de.markusbordihn.easynpc.";
+	private static final String[] EASY_NPC_MARKERS = {
+		"de.markusbordihn.easynpc.entity.easynpc.EasyNPCEntityAccess",
+		"de.markusbordihn.easynpc.entity.easynpc.npc.StandardEasyNPC"
+	};
+
 	private VillagerTradeBlocker() {
 	}
 
@@ -29,12 +35,50 @@ public final class VillagerTradeBlocker {
 	}
 
 	private static boolean shouldBlock(Entity entity) {
+		if (isEasyNpcMerchant(entity)) {
+			return false;
+		}
+
 		if (entity instanceof Villager) {
 			return ModConfig.isVillagerTradingDisabled();
 		}
 
 		if (entity instanceof WanderingTrader) {
 			return ModConfig.isWanderingTraderTradingDisabled();
+		}
+
+		return false;
+	}
+
+	private static boolean isEasyNpcMerchant(Entity entity) {
+		Class<?> currentClass = entity.getClass();
+		while (currentClass != null) {
+			if (isEasyNpcType(currentClass)) {
+				return true;
+			}
+
+			for (Class<?> interfaceClass : currentClass.getInterfaces()) {
+				if (isEasyNpcType(interfaceClass)) {
+					return true;
+				}
+			}
+
+			currentClass = currentClass.getSuperclass();
+		}
+
+		return false;
+	}
+
+	private static boolean isEasyNpcType(Class<?> type) {
+		String name = type.getName();
+		if (name.startsWith(EASY_NPC_PACKAGE_PREFIX)) {
+			return true;
+		}
+
+		for (String marker : EASY_NPC_MARKERS) {
+			if (marker.equals(name)) {
+				return true;
+			}
 		}
 
 		return false;

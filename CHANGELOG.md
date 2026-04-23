@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.4
+
+- Added compatibility handling so Easy NPC merchants are not blocked by vanilla villager trading restrictions
+- Kept vanilla `Villager` and `WanderingTrader` trade blocking separate from Easy NPC merchant interactions
+
 ## 0.1.3
 
 - Added optional JEI integration for the Recall Potion brewing recipe
