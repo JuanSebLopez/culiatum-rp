@@ -4,11 +4,14 @@ import com.culiatum.rp.command.ModCommands;
 import com.culiatum.rp.item.ModItems;
 import com.culiatum.rp.pvp.CombatManager;
 import com.culiatum.rp.radar.RadarManager;
+import com.culiatum.rp.timelimit.TimeLimitManager;
 import com.culiatum.rp.util.CommandBlocker;
 import com.culiatum.rp.util.VillagerTradeBlocker;
+import com.culiatum.rp.vote.TimeVoteManager;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,5 +36,7 @@ public final class CuliatumRpMod implements ModInitializer {
 		CommandBlocker.initialize();
 		VillagerTradeBlocker.initialize();
 		RadarManager.initialize();
+		TimeLimitManager.initialize();
+		ServerTickEvents.END_SERVER_TICK.register(TimeVoteManager::tick);
 	}
 }
