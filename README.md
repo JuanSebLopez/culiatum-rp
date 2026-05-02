@@ -4,7 +4,7 @@
 
 ## Project Status
 
-- Current version: `0.1.4-alpha`
+- Current version: `0.1.5-alpha`
 - Target loader: `Fabric Loader 0.18.4`
 - Target Java version: `21`
 - Compatible with `Mod Menu` through metadata in `fabric.mod.json`
@@ -17,6 +17,11 @@
 - A command-configurable `Radar` item for bounty target assignment
 - One-radar-per-player mission flow with automatic expiration cleanup
 - Action bar radar feedback with cooldown
+- Clickable world votes for `day`, `night`, and `clear weather`
+- Command cooldown handling for `/tpa`, `/spawn`, and `/home`
+- A `Home Setter` item for setting homes by right-click
+- Forced PvP event controls for individual players and global events
+- A real-time daily playtime limit system with persistent player tracking
 - Basic configuration through `config/culiatum-rp.properties`
 
 ## Mod Vision
@@ -45,7 +50,31 @@ The command-editable systems currently start with:
 /culiatumrp radar set <hunter> <target> <minutes> [label]
 /culiatumrp radar clear <hunter>
 /culiatumrp radar status <hunter>
+/culiatumrp homesetter give <player>
+/culiatumrp pvp enable <player>
+/culiatumrp pvp disable <player>
+/culiatumrp pvp enableall
+/culiatumrp pvp disableall
+/culiatumrp timelimit system enable
+/culiatumrp timelimit system disable
+/culiatumrp timelimit player category <player> paid|unpaid
+/culiatumrp timelimit player category uuid <uuid> paid|unpaid
+/culiatumrp timelimit player bypass <player> <true|false>
+/culiatumrp timelimit player reset <player>
 ```
+
+## Daily Time Limits
+
+The time-limit system uses real-world calendar time from `America/Bogota`, not the in-game day cycle.
+
+It supports:
+
+- Separate weekday and weekend limits
+- Separate `PAID` and `UNPAID` player categories
+- Persistent usage tracking across restarts
+- Automatic midnight resets in Bogota time
+- Optional admin bypass
+- UUID-based admin recovery for players who cannot remain online long enough to be managed live
 
 ## Development and Branch Workflow
 
@@ -67,5 +96,5 @@ For new work, the preferred flow is to develop from dedicated `worktrees` and me
 The remapped jar is generated at:
 
 ```text
-build/libs/culiatum-rp-0.1.4.jar
+build/libs/culiatum-rp-0.1.5.jar
 ```

@@ -2,6 +2,7 @@ package com.culiatum.rp.timelimit;
 
 import com.culiatum.rp.ModConfig;
 import com.mojang.brigadier.arguments.BoolArgumentType;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -41,23 +42,52 @@ public final class TimeLimitCommands {
 			.then(Commands.literal("player")
 				.then(Commands.literal("status")
 					.then(Commands.argument("player", EntityArgument.player())
-						.executes(context -> showPlayerStatus(context.getSource(), EntityArgument.getPlayer(context, "player")))))
+						.executes(context -> showPlayerStatus(context.getSource(), EntityArgument.getPlayer(context, "player"))))
+					.then(Commands.literal("uuid")
+						.then(Commands.argument("uuid", StringArgumentType.word())
+							.executes(context -> showPlayerStatusByUuid(
+								context.getSource(),
+								StringArgumentType.getString(context, "uuid"))))))
 				.then(Commands.literal("category")
 					.then(Commands.argument("player", EntityArgument.player())
 						.then(Commands.literal("paid")
 							.executes(context -> setCategory(context.getSource(), EntityArgument.getPlayer(context, "player"), PlayerTimeCategory.PAID)))
 						.then(Commands.literal("unpaid")
-							.executes(context -> setCategory(context.getSource(), EntityArgument.getPlayer(context, "player"), PlayerTimeCategory.UNPAID)))))
+							.executes(context -> setCategory(context.getSource(), EntityArgument.getPlayer(context, "player"), PlayerTimeCategory.UNPAID))))
+					.then(Commands.literal("uuid")
+						.then(Commands.argument("uuid", StringArgumentType.word())
+							.then(Commands.literal("paid")
+								.executes(context -> setCategoryByUuid(
+									context.getSource(),
+									StringArgumentType.getString(context, "uuid"),
+									PlayerTimeCategory.PAID)))
+							.then(Commands.literal("unpaid")
+								.executes(context -> setCategoryByUuid(
+									context.getSource(),
+									StringArgumentType.getString(context, "uuid"),
+									PlayerTimeCategory.UNPAID))))))
 				.then(Commands.literal("bypass")
 					.then(Commands.argument("player", EntityArgument.player())
 						.then(Commands.argument("enabled", BoolArgumentType.bool())
 							.executes(context -> setBypass(
 								context.getSource(),
 								EntityArgument.getPlayer(context, "player"),
-								BoolArgumentType.getBool(context, "enabled"))))))
+								BoolArgumentType.getBool(context, "enabled")))))
+					.then(Commands.literal("uuid")
+						.then(Commands.argument("uuid", StringArgumentType.word())
+							.then(Commands.argument("enabled", BoolArgumentType.bool())
+								.executes(context -> setBypassByUuid(
+									context.getSource(),
+									StringArgumentType.getString(context, "uuid"),
+									BoolArgumentType.getBool(context, "enabled")))))))
 				.then(Commands.literal("reset")
 					.then(Commands.argument("player", EntityArgument.player())
-						.executes(context -> resetPlayer(context.getSource(), EntityArgument.getPlayer(context, "player"))))))
+						.executes(context -> resetPlayer(context.getSource(), EntityArgument.getPlayer(context, "player"))))
+					.then(Commands.literal("uuid")
+						.then(Commands.argument("uuid", StringArgumentType.word())
+							.executes(context -> resetPlayerByUuid(
+								context.getSource(),
+								StringArgumentType.getString(context, "uuid")))))))
 			.then(Commands.literal("resetall")
 				.executes(context -> resetAll(context.getSource())))
 			.then(Commands.literal("reload")
@@ -116,10 +146,31 @@ public final class TimeLimitCommands {
 		return 1;
 	}
 
+	private static int showPlayerStatusByUuid(CommandSourceStack source, String rawUuid) {
+		java.util.UUID uuid = parseUuid(source, rawUuid);
+		if (uuid == null) {
+			return 0;
+		}
+		source.sendSuccess(() -> TimeLimitManager.buildStatusMessage(source.getServer(), uuid, uuid.toString()), false);
+		return 1;
+	}
+
 	private static int setCategory(CommandSourceStack source, ServerPlayer player, PlayerTimeCategory category) {
 		TimeLimitManager.setPlayerCategory(source.getServer(), player, category);
 		source.sendSuccess(() -> Component.literal(
 			"Assigned " + category.name() + " category to " + player.getName().getString() + "."
+		), true);
+		return 1;
+	}
+
+	private static int setCategoryByUuid(CommandSourceStack source, String rawUuid, PlayerTimeCategory category) {
+		java.util.UUID uuid = parseUuid(source, rawUuid);
+		if (uuid == null) {
+			return 0;
+		}
+		TimeLimitManager.setPlayerCategory(source.getServer(), uuid, category);
+		source.sendSuccess(() -> Component.literal(
+			"Assigned " + category.name() + " category to " + uuid + "."
 		), true);
 		return 1;
 	}
@@ -132,10 +183,34 @@ public final class TimeLimitCommands {
 		return 1;
 	}
 
+	private static int setBypassByUuid(CommandSourceStack source, String rawUuid, boolean enabled) {
+		java.util.UUID uuid = parseUuid(source, rawUuid);
+		if (uuid == null) {
+			return 0;
+		}
+		TimeLimitManager.setPlayerBypass(source.getServer(), uuid, enabled);
+		source.sendSuccess(() -> Component.literal(
+			(enabled ? "Enabled" : "Disabled") + " time-limit bypass for " + uuid + "."
+		), true);
+		return 1;
+	}
+
 	private static int resetPlayer(CommandSourceStack source, ServerPlayer player) {
 		TimeLimitManager.resetPlayerUsage(source.getServer(), player.getUUID());
 		source.sendSuccess(() -> Component.literal(
 			"Reset today's time usage for " + player.getName().getString() + "."
+		), true);
+		return 1;
+	}
+
+	private static int resetPlayerByUuid(CommandSourceStack source, String rawUuid) {
+		java.util.UUID uuid = parseUuid(source, rawUuid);
+		if (uuid == null) {
+			return 0;
+		}
+		TimeLimitManager.resetPlayerUsage(source.getServer(), uuid);
+		source.sendSuccess(() -> Component.literal(
+			"Reset today's time usage for " + uuid + "."
 		), true);
 		return 1;
 	}
@@ -163,5 +238,14 @@ public final class TimeLimitCommands {
 		}
 
 		return false;
+	}
+
+	private static java.util.UUID parseUuid(CommandSourceStack source, String rawUuid) {
+		try {
+			return java.util.UUID.fromString(rawUuid);
+		} catch (IllegalArgumentException exception) {
+			source.sendFailure(Component.literal("Invalid UUID: " + rawUuid + "."));
+			return null;
+		}
 	}
 }

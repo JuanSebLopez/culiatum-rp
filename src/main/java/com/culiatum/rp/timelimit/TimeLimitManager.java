@@ -40,17 +40,25 @@ public final class TimeLimitManager {
 	}
 
 	public static void setPlayerCategory(MinecraftServer server, ServerPlayer player, PlayerTimeCategory category) {
-		PlayerTimeData data = getData(server, player.getUUID());
-		data.setCategory(category);
-		storage.setDirty();
+		setPlayerCategory(server, player.getUUID(), category);
 		enforceIfNeeded(server, player);
 	}
 
+	public static void setPlayerCategory(MinecraftServer server, UUID playerUuid, PlayerTimeCategory category) {
+		PlayerTimeData data = getData(server, playerUuid);
+		data.setCategory(category);
+		storage.setDirty();
+	}
+
 	public static void setPlayerBypass(MinecraftServer server, ServerPlayer player, boolean bypass) {
-		PlayerTimeData data = getData(server, player.getUUID());
+		setPlayerBypass(server, player.getUUID(), bypass);
+		SESSION_LAST_UPDATE.put(player.getUUID(), System.currentTimeMillis());
+	}
+
+	public static void setPlayerBypass(MinecraftServer server, UUID playerUuid, boolean bypass) {
+		PlayerTimeData data = getData(server, playerUuid);
 		data.setBypass(bypass);
 		storage.setDirty();
-		SESSION_LAST_UPDATE.put(player.getUUID(), System.currentTimeMillis());
 	}
 
 	public static void resetPlayerUsage(MinecraftServer server, UUID playerUuid) {
@@ -91,13 +99,17 @@ public final class TimeLimitManager {
 	}
 
 	public static Component buildStatusMessage(MinecraftServer server, ServerPlayer player) {
-		TimeLimitSnapshot snapshot = getSnapshot(server, player.getUUID());
+		return buildStatusMessage(server, player.getUUID(), player.getName().getString());
+	}
+
+	public static Component buildStatusMessage(MinecraftServer server, UUID playerUuid, String label) {
+		TimeLimitSnapshot snapshot = getSnapshot(server, playerUuid);
 		return Component.literal(
-			player.getName().getString()
+			label
 				+ " | Category: " + snapshot.category().name()
 				+ " | Used: " + formatDuration(snapshot.usedMillis())
 				+ " | Remaining: " + formatDuration(snapshot.remainingMillis())
-				+ " | Bypass: " + (snapshot.bypass() || hasOpBypass(server, player) ? "yes" : "no")
+				+ " | Bypass: " + snapshot.bypass()
 				+ " | System: " + (snapshot.systemEnabled() ? "enabled" : "disabled")
 				+ " | Enforcement: " + (snapshot.enforcementEnabled() ? "enabled" : "disabled")
 		);
