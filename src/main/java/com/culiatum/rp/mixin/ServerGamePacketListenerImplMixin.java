@@ -21,16 +21,18 @@ public abstract class ServerGamePacketListenerImplMixin {
 
 	@Inject(method = "handleChatCommand", at = @At("HEAD"), cancellable = true)
 	private void culiatum$pvpBlockUnsigned(ServerboundChatCommandPacket packet, CallbackInfo ci) {
-		if (CommandBlocker.shouldBlock(player, packet.command())) {
-			player.displayClientMessage(Component.literal("You cannot use that command while in combat."), true);
+		Component reason = CommandBlocker.handleCommand(player, packet.command());
+		if (reason != null) {
+			player.displayClientMessage(reason, true);
 			ci.cancel();
 		}
 	}
 
 	@Inject(method = "performSignedChatCommand", at = @At("HEAD"), cancellable = true)
 	private void culiatum$pvpBlockSigned(ServerboundChatCommandSignedPacket packet, LastSeenMessages lastSeenMessages, CallbackInfo ci) {
-		if (CommandBlocker.shouldBlock(player, packet.command())) {
-			player.displayClientMessage(Component.literal("You cannot use that command while in combat."), true);
+		Component reason = CommandBlocker.handleCommand(player, packet.command());
+		if (reason != null) {
+			player.displayClientMessage(reason, true);
 			ci.cancel();
 		}
 	}

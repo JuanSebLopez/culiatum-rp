@@ -1,5 +1,18 @@
 # Changelog
 
+## 0.1.5
+
+- Added clickable world votes for `day`, `night`, and `clear weather`
+- Added command cooldown handling for `/tpa`, `/spawn`, and `/home`
+- Added the `Home Setter` item for setting player homes by right-click
+- Added forced PvP event controls for individual players and global events
+- Added optional admin validation bypass through config
+- Added real-time daily playtime limits based on `America/Bogota`
+- Added separate weekday and weekend limits for `PAID` and `UNPAID` player categories
+- Added persistent per-player playtime tracking, category storage, bypass flags, and daily reset state
+- Added admin commands to manage time-limit system state, enforcement, categories, bypass, resets, and reloads
+- Added UUID-based time-limit administration for players who cannot stay online long enough to be managed live
+
 ## 0.1.4
 
 - Added compatibility handling so Easy NPC merchants are not blocked by vanilla villager trading restrictions
