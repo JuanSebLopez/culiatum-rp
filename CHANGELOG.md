@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.6
+
+- Added offline player resolution by cached player name for time-limit administration
+- Added a configurable weekly pause window for the time-limit system
+- Improved time-limit system status output to show effective active or paused state
+
 ## 0.1.5
 
 - Added clickable world votes for `day`, `night`, and `clear weather`
@@ -11,8 +17,6 @@
 - Added separate weekday and weekend limits for `PAID` and `UNPAID` player categories
 - Added persistent per-player playtime tracking, category storage, bypass flags, and daily reset state
 - Added admin commands to manage time-limit system state, enforcement, categories, bypass, resets, and reloads
-- Added offline player resolution by cached player name for time-limit administration
-- Added a configurable weekly pause window for the time-limit system
 
 ## 0.1.4
 

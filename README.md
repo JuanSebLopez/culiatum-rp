@@ -4,7 +4,7 @@
 
 ## Project Status
 
-- Current version: `0.1.5-alpha`
+- Current version: `0.1.6-alpha`
 - Target loader: `Fabric Loader 0.18.4`
 - Target Java version: `21`
 - Compatible with `Mod Menu` through metadata in `fabric.mod.json`
@@ -162,5 +162,5 @@ For new work, the preferred flow is to develop from dedicated `worktrees` and me
 The remapped jar is generated at:
 
 ```text
-build/libs/culiatum-rp-0.1.5.jar
+build/libs/culiatum-rp-0.1.6.jar
 ```
