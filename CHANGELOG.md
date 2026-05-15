@@ -11,7 +11,8 @@
 - Added separate weekday and weekend limits for `PAID` and `UNPAID` player categories
 - Added persistent per-player playtime tracking, category storage, bypass flags, and daily reset state
 - Added admin commands to manage time-limit system state, enforcement, categories, bypass, resets, and reloads
-- Added UUID-based time-limit administration for players who cannot stay online long enough to be managed live
+- Added offline player resolution by cached player name for time-limit administration
+- Added a configurable weekly pause window for the time-limit system
 
 ## 0.1.4
 

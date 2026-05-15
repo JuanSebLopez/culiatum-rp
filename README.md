@@ -55,12 +55,22 @@ The command-editable systems currently start with:
 /culiatumrp pvp disable <player>
 /culiatumrp pvp enableall
 /culiatumrp pvp disableall
+/culiatumrp pvp status <player>
+/culiatumrp timelimit system status
 /culiatumrp timelimit system enable
 /culiatumrp timelimit system disable
+/culiatumrp timelimit enforcement enable
+/culiatumrp timelimit enforcement disable
+/culiatumrp timelimit enforcement status
+/culiatumrp timelimit opbypass enable
+/culiatumrp timelimit opbypass disable
+/culiatumrp timelimit opbypass status
+/culiatumrp timelimit player status <player>
 /culiatumrp timelimit player category <player> paid|unpaid
-/culiatumrp timelimit player category uuid <uuid> paid|unpaid
 /culiatumrp timelimit player bypass <player> <true|false>
 /culiatumrp timelimit player reset <player>
+/culiatumrp timelimit resetall
+/culiatumrp timelimit reload
 ```
 
 ## Daily Time Limits
@@ -73,8 +83,64 @@ It supports:
 - Separate `PAID` and `UNPAID` player categories
 - Persistent usage tracking across restarts
 - Automatic midnight resets in Bogota time
+- Optional automatic weekly pause windows, such as a full weekend pause
 - Optional admin bypass
-- UUID-based admin recovery for players who cannot remain online long enough to be managed live
+- Offline admin recovery by cached player name for players who are not currently connected
+
+Administrative player commands resolve targets in this order:
+
+- online player by exact name
+- cached player profile from `usercache.json`
+
+That means a player must have joined the server at least once before they can be managed while offline.
+
+## Config Reference
+
+The main config file is:
+
+```text
+config/culiatum-rp.properties
+```
+
+Important variables currently exposed there include:
+
+### Combat and command control
+
+- `combat_tag_seconds`: duration of the regular combat tag
+- `blocked_command_prefixes`: configured command roots blocked during combat
+- `tpa_cooldown_seconds`: cooldown for `/tpa`
+- `spawn_cooldown_seconds`: cooldown for `/spawn`
+- `home_cooldown_seconds`: cooldown for `/home`
+- `disable_home_set_commands`: optional hard block for `/home set` and `/sethome`
+- `op_bypass_validations`: allows OPs to bypass command and time-limit validations
+
+### Radar and mission items
+
+- `radar_cooldown_seconds`: cooldown between radar uses
+
+### Daily time-limit system
+
+- `system_enabled`: manual master switch for the time-limit system
+- `enforcement_enabled`: controls whether limit enforcement can kick players
+- `timezone`: real-world timezone used for daily resets and weekly pause windows
+- `weekday_paid_seconds`: weekday daily limit for `PAID` players
+- `weekday_unpaid_seconds`: weekday daily limit for `UNPAID` players
+- `weekend_paid_seconds`: weekend daily limit for `PAID` players
+- `weekend_unpaid_seconds`: weekend daily limit for `UNPAID` players
+- `weekly_pause_enabled`: enables the automatic weekly pause window
+- `weekly_pause_start_day`: start day for the weekly pause, such as `FRIDAY`
+- `weekly_pause_start_time`: start time for the weekly pause, such as `18:00`
+- `weekly_pause_end_day`: end day for the weekly pause, such as `MONDAY`
+- `weekly_pause_end_time`: end time for the weekly pause, such as `00:00`
+- `limit_action`: current enforcement action setting
+- `kick_message`: message used when a player reaches the enforced daily limit
+
+Default weekly pause behavior can be configured to suspend the entire time-limit system between specific real-world calendar points without clearing stored playtime.
+
+### Trading restrictions
+
+- `disable_villager_trading`: blocks vanilla `Villager` trading when enabled
+- `disable_wandering_trader_trading`: blocks vanilla `WanderingTrader` trading when enabled
 
 ## Development and Branch Workflow
 

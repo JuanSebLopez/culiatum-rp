@@ -23,6 +23,11 @@ public final class ModConfig {
 	private static boolean timeLimitSystemEnabled = true;
 	private static boolean timeLimitEnforcementEnabled = true;
 	private static String timeLimitTimezone = "America/Bogota";
+	private static boolean timeLimitWeeklyPauseEnabled = true;
+	private static String timeLimitWeeklyPauseStartDay = "FRIDAY";
+	private static String timeLimitWeeklyPauseStartTime = "18:00";
+	private static String timeLimitWeeklyPauseEndDay = "MONDAY";
+	private static String timeLimitWeeklyPauseEndTime = "00:00";
 	private static String timeLimitAction = "kick";
 	private static String timeLimitKickMessage = "You reached today's play time limit. Come back after midnight in Bogota time.";
 	private static int weekdayPaidSeconds = 21_600;
@@ -65,6 +70,11 @@ public final class ModConfig {
 			timeLimitSystemEnabled = readBoolean(properties, "system_enabled", true);
 			timeLimitEnforcementEnabled = readBoolean(properties, "enforcement_enabled", true);
 			timeLimitTimezone = readString(properties, "timezone", "America/Bogota");
+			timeLimitWeeklyPauseEnabled = readBoolean(properties, "weekly_pause_enabled", true);
+			timeLimitWeeklyPauseStartDay = readString(properties, "weekly_pause_start_day", "FRIDAY");
+			timeLimitWeeklyPauseStartTime = readString(properties, "weekly_pause_start_time", "18:00");
+			timeLimitWeeklyPauseEndDay = readString(properties, "weekly_pause_end_day", "MONDAY");
+			timeLimitWeeklyPauseEndTime = readString(properties, "weekly_pause_end_time", "00:00");
 			timeLimitAction = readString(properties, "limit_action", "kick");
 			timeLimitKickMessage = readString(properties, "kick_message", "You reached today's play time limit. Come back after midnight in Bogota time.");
 			weekdayPaidSeconds = readInt(properties, "weekday_paid_seconds", 21_600, 0);
@@ -162,6 +172,26 @@ public final class ModConfig {
 		return timeLimitTimezone;
 	}
 
+	public static boolean isTimeLimitWeeklyPauseEnabled() {
+		return timeLimitWeeklyPauseEnabled;
+	}
+
+	public static String getTimeLimitWeeklyPauseStartDay() {
+		return timeLimitWeeklyPauseStartDay;
+	}
+
+	public static String getTimeLimitWeeklyPauseStartTime() {
+		return timeLimitWeeklyPauseStartTime;
+	}
+
+	public static String getTimeLimitWeeklyPauseEndDay() {
+		return timeLimitWeeklyPauseEndDay;
+	}
+
+	public static String getTimeLimitWeeklyPauseEndTime() {
+		return timeLimitWeeklyPauseEndTime;
+	}
+
 	public static String getTimeLimitAction() {
 		return timeLimitAction;
 	}
@@ -231,6 +261,11 @@ public final class ModConfig {
 			properties.setProperty("system_enabled", Boolean.toString(timeLimitSystemEnabled));
 			properties.setProperty("enforcement_enabled", Boolean.toString(timeLimitEnforcementEnabled));
 			properties.setProperty("timezone", timeLimitTimezone);
+			properties.setProperty("weekly_pause_enabled", Boolean.toString(timeLimitWeeklyPauseEnabled));
+			properties.setProperty("weekly_pause_start_day", timeLimitWeeklyPauseStartDay);
+			properties.setProperty("weekly_pause_start_time", timeLimitWeeklyPauseStartTime);
+			properties.setProperty("weekly_pause_end_day", timeLimitWeeklyPauseEndDay);
+			properties.setProperty("weekly_pause_end_time", timeLimitWeeklyPauseEndTime);
 			properties.setProperty("limit_action", timeLimitAction);
 			properties.setProperty("kick_message", timeLimitKickMessage);
 			properties.setProperty("weekday_paid_seconds", Integer.toString(weekdayPaidSeconds));

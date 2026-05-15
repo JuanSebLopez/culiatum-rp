@@ -7,6 +7,7 @@ public record TimeLimitSnapshot(
 	long remainingMillis,
 	boolean bypass,
 	boolean systemEnabled,
+	boolean effectiveSystemEnabled,
 	boolean enforcementEnabled
 ) {
 }

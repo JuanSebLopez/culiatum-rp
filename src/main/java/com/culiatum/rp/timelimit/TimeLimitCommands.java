@@ -1,15 +1,22 @@
 package com.culiatum.rp.timelimit;
 
 import com.culiatum.rp.ModConfig;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.NameAndId;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.UUID;
 
 public final class TimeLimitCommands {
 	private TimeLimitCommands() {
@@ -41,53 +48,30 @@ public final class TimeLimitCommands {
 					.executes(context -> showOpBypassStatus(context.getSource()))))
 			.then(Commands.literal("player")
 				.then(Commands.literal("status")
-					.then(Commands.argument("player", EntityArgument.player())
-						.executes(context -> showPlayerStatus(context.getSource(), EntityArgument.getPlayer(context, "player"))))
-					.then(Commands.literal("uuid")
-						.then(Commands.argument("uuid", StringArgumentType.word())
-							.executes(context -> showPlayerStatusByUuid(
-								context.getSource(),
-								StringArgumentType.getString(context, "uuid"))))))
+					.then(Commands.argument("player", StringArgumentType.word())
+						.executes(context -> showPlayerStatus(context.getSource(), StringArgumentType.getString(context, "player")))))
 				.then(Commands.literal("category")
-					.then(Commands.argument("player", EntityArgument.player())
+					.then(Commands.argument("player", StringArgumentType.word())
 						.then(Commands.literal("paid")
-							.executes(context -> setCategory(context.getSource(), EntityArgument.getPlayer(context, "player"), PlayerTimeCategory.PAID)))
+							.executes(context -> setCategory(
+								context.getSource(),
+								StringArgumentType.getString(context, "player"),
+								PlayerTimeCategory.PAID)))
 						.then(Commands.literal("unpaid")
-							.executes(context -> setCategory(context.getSource(), EntityArgument.getPlayer(context, "player"), PlayerTimeCategory.UNPAID))))
-					.then(Commands.literal("uuid")
-						.then(Commands.argument("uuid", StringArgumentType.word())
-							.then(Commands.literal("paid")
-								.executes(context -> setCategoryByUuid(
-									context.getSource(),
-									StringArgumentType.getString(context, "uuid"),
-									PlayerTimeCategory.PAID)))
-							.then(Commands.literal("unpaid")
-								.executes(context -> setCategoryByUuid(
-									context.getSource(),
-									StringArgumentType.getString(context, "uuid"),
-									PlayerTimeCategory.UNPAID))))))
+							.executes(context -> setCategory(
+								context.getSource(),
+								StringArgumentType.getString(context, "player"),
+								PlayerTimeCategory.UNPAID)))))
 				.then(Commands.literal("bypass")
-					.then(Commands.argument("player", EntityArgument.player())
+					.then(Commands.argument("player", StringArgumentType.word())
 						.then(Commands.argument("enabled", BoolArgumentType.bool())
 							.executes(context -> setBypass(
 								context.getSource(),
-								EntityArgument.getPlayer(context, "player"),
-								BoolArgumentType.getBool(context, "enabled")))))
-					.then(Commands.literal("uuid")
-						.then(Commands.argument("uuid", StringArgumentType.word())
-							.then(Commands.argument("enabled", BoolArgumentType.bool())
-								.executes(context -> setBypassByUuid(
-									context.getSource(),
-									StringArgumentType.getString(context, "uuid"),
-									BoolArgumentType.getBool(context, "enabled")))))))
+								StringArgumentType.getString(context, "player"),
+								BoolArgumentType.getBool(context, "enabled"))))))
 				.then(Commands.literal("reset")
-					.then(Commands.argument("player", EntityArgument.player())
-						.executes(context -> resetPlayer(context.getSource(), EntityArgument.getPlayer(context, "player"))))
-					.then(Commands.literal("uuid")
-						.then(Commands.argument("uuid", StringArgumentType.word())
-							.executes(context -> resetPlayerByUuid(
-								context.getSource(),
-								StringArgumentType.getString(context, "uuid")))))))
+					.then(Commands.argument("player", StringArgumentType.word())
+						.executes(context -> resetPlayer(context.getSource(), StringArgumentType.getString(context, "player"))))))
 			.then(Commands.literal("resetall")
 				.executes(context -> resetAll(context.getSource())))
 			.then(Commands.literal("reload")
@@ -105,7 +89,15 @@ public final class TimeLimitCommands {
 
 	private static int showSystemStatus(CommandSourceStack source) {
 		source.sendSuccess(() -> Component.literal(
-			"Daily time limit system is " + (ModConfig.isTimeLimitSystemEnabled() ? "enabled" : "disabled") + "."
+			"Daily time limit system is "
+				+ (ModConfig.isTimeLimitSystemEnabled() ? "enabled" : "disabled")
+				+ " | Effective state: "
+				+ (TimeLimitManager.isTimeLimitSystemActiveNow() ? "active" : "paused")
+				+ " | Weekly pause: "
+				+ (ModConfig.isTimeLimitWeeklyPauseEnabled()
+					? ModConfig.getTimeLimitWeeklyPauseStartDay() + " " + ModConfig.getTimeLimitWeeklyPauseStartTime()
+						+ " -> " + ModConfig.getTimeLimitWeeklyPauseEndDay() + " " + ModConfig.getTimeLimitWeeklyPauseEndTime()
+					: "disabled")
 		), false);
 		return 1;
 	}
@@ -141,76 +133,60 @@ public final class TimeLimitCommands {
 		return 1;
 	}
 
-	private static int showPlayerStatus(CommandSourceStack source, ServerPlayer player) {
-		source.sendSuccess(() -> TimeLimitManager.buildStatusMessage(source.getServer(), player), false);
-		return 1;
-	}
-
-	private static int showPlayerStatusByUuid(CommandSourceStack source, String rawUuid) {
-		java.util.UUID uuid = parseUuid(source, rawUuid);
-		if (uuid == null) {
+	private static int showPlayerStatus(CommandSourceStack source, String playerName) {
+		ResolvedPlayerTarget target = resolvePlayerTarget(source, playerName);
+		if (target == null) {
 			return 0;
 		}
-		source.sendSuccess(() -> TimeLimitManager.buildStatusMessage(source.getServer(), uuid, uuid.toString()), false);
+		source.sendSuccess(() -> TimeLimitManager.buildStatusMessage(source.getServer(), target.uuid(), target.label()), false);
 		return 1;
 	}
 
-	private static int setCategory(CommandSourceStack source, ServerPlayer player, PlayerTimeCategory category) {
-		TimeLimitManager.setPlayerCategory(source.getServer(), player, category);
-		source.sendSuccess(() -> Component.literal(
-			"Assigned " + category.name() + " category to " + player.getName().getString() + "."
-		), true);
-		return 1;
-	}
-
-	private static int setCategoryByUuid(CommandSourceStack source, String rawUuid, PlayerTimeCategory category) {
-		java.util.UUID uuid = parseUuid(source, rawUuid);
-		if (uuid == null) {
+	private static int setCategory(CommandSourceStack source, String playerName, PlayerTimeCategory category) {
+		ResolvedPlayerTarget target = resolvePlayerTarget(source, playerName);
+		if (target == null) {
 			return 0;
 		}
-		TimeLimitManager.setPlayerCategory(source.getServer(), uuid, category);
+
+		ServerPlayer onlinePlayer = source.getServer().getPlayerList().getPlayer(target.uuid());
+		if (onlinePlayer != null) {
+			TimeLimitManager.setPlayerCategory(source.getServer(), onlinePlayer, category);
+		} else {
+			TimeLimitManager.setPlayerCategory(source.getServer(), target.uuid(), category);
+		}
 		source.sendSuccess(() -> Component.literal(
-			"Assigned " + category.name() + " category to " + uuid + "."
+			"Assigned " + category.name() + " category to " + target.label() + "."
 		), true);
 		return 1;
 	}
 
-	private static int setBypass(CommandSourceStack source, ServerPlayer player, boolean enabled) {
-		TimeLimitManager.setPlayerBypass(source.getServer(), player, enabled);
-		source.sendSuccess(() -> Component.literal(
-			(enabled ? "Enabled" : "Disabled") + " time-limit bypass for " + player.getName().getString() + "."
-		), true);
-		return 1;
-	}
-
-	private static int setBypassByUuid(CommandSourceStack source, String rawUuid, boolean enabled) {
-		java.util.UUID uuid = parseUuid(source, rawUuid);
-		if (uuid == null) {
+	private static int setBypass(CommandSourceStack source, String playerName, boolean enabled) {
+		ResolvedPlayerTarget target = resolvePlayerTarget(source, playerName);
+		if (target == null) {
 			return 0;
 		}
-		TimeLimitManager.setPlayerBypass(source.getServer(), uuid, enabled);
+
+		ServerPlayer onlinePlayer = source.getServer().getPlayerList().getPlayer(target.uuid());
+		if (onlinePlayer != null) {
+			TimeLimitManager.setPlayerBypass(source.getServer(), onlinePlayer, enabled);
+		} else {
+			TimeLimitManager.setPlayerBypass(source.getServer(), target.uuid(), enabled);
+		}
+
 		source.sendSuccess(() -> Component.literal(
-			(enabled ? "Enabled" : "Disabled") + " time-limit bypass for " + uuid + "."
+			(enabled ? "Enabled" : "Disabled") + " time-limit bypass for " + target.label() + "."
 		), true);
 		return 1;
 	}
 
-	private static int resetPlayer(CommandSourceStack source, ServerPlayer player) {
-		TimeLimitManager.resetPlayerUsage(source.getServer(), player.getUUID());
-		source.sendSuccess(() -> Component.literal(
-			"Reset today's time usage for " + player.getName().getString() + "."
-		), true);
-		return 1;
-	}
-
-	private static int resetPlayerByUuid(CommandSourceStack source, String rawUuid) {
-		java.util.UUID uuid = parseUuid(source, rawUuid);
-		if (uuid == null) {
+	private static int resetPlayer(CommandSourceStack source, String playerName) {
+		ResolvedPlayerTarget target = resolvePlayerTarget(source, playerName);
+		if (target == null) {
 			return 0;
 		}
-		TimeLimitManager.resetPlayerUsage(source.getServer(), uuid);
+		TimeLimitManager.resetPlayerUsage(source.getServer(), target.uuid());
 		source.sendSuccess(() -> Component.literal(
-			"Reset today's time usage for " + uuid + "."
+			"Reset today's time usage for " + target.label() + "."
 		), true);
 		return 1;
 	}
@@ -240,12 +216,63 @@ public final class TimeLimitCommands {
 		return false;
 	}
 
-	private static java.util.UUID parseUuid(CommandSourceStack source, String rawUuid) {
-		try {
-			return java.util.UUID.fromString(rawUuid);
-		} catch (IllegalArgumentException exception) {
-			source.sendFailure(Component.literal("Invalid UUID: " + rawUuid + "."));
+	private static ResolvedPlayerTarget resolvePlayerTarget(CommandSourceStack source, String playerName) {
+		ServerPlayer onlinePlayer = source.getServer().getPlayerList().getPlayerByName(playerName);
+		if (onlinePlayer != null) {
+			return new ResolvedPlayerTarget(onlinePlayer.getUUID(), onlinePlayer.getName().getString());
+		}
+
+		ResolvedPlayerTarget cachedTarget = findInUserCache(playerName);
+		if (cachedTarget != null) {
+			return cachedTarget;
+		}
+
+		source.sendFailure(Component.literal("Unknown player: " + playerName + ". The player must have joined the server at least once."));
+		return null;
+	}
+
+	private static ResolvedPlayerTarget findInUserCache(String playerName) {
+		Path userCachePath = Path.of("usercache.json");
+		if (!Files.exists(userCachePath)) {
 			return null;
 		}
+
+		try {
+			String rawJson = Files.readString(userCachePath);
+			JsonElement root = JsonParser.parseString(rawJson);
+			if (!(root instanceof JsonArray entries)) {
+				return null;
+			}
+
+			for (JsonElement entryElement : entries) {
+				if (!entryElement.isJsonObject()) {
+					continue;
+				}
+
+				String cachedName = entryElement.getAsJsonObject().has("name")
+					? entryElement.getAsJsonObject().get("name").getAsString()
+					: "";
+				String cachedUuid = entryElement.getAsJsonObject().has("uuid")
+					? entryElement.getAsJsonObject().get("uuid").getAsString()
+					: "";
+
+				if (!cachedName.equalsIgnoreCase(playerName) || cachedUuid.isBlank()) {
+					continue;
+				}
+
+				try {
+					return new ResolvedPlayerTarget(UUID.fromString(cachedUuid), cachedName);
+				} catch (IllegalArgumentException ignored) {
+					return null;
+				}
+			}
+		} catch (IOException | IllegalStateException ignored) {
+			return null;
+		}
+
+		return null;
+	}
+
+	private record ResolvedPlayerTarget(UUID uuid, String label) {
 	}
 }

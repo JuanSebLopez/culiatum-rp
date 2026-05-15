@@ -11,7 +11,10 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.NameAndId;
 
 import java.time.DateTimeException;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.Map;
 import java.util.UUID;
@@ -89,6 +92,7 @@ public final class TimeLimitManager {
 			remaining,
 			data.hasBypass(),
 			ModConfig.isTimeLimitSystemEnabled(),
+			isTimeLimitSystemActiveNow(),
 			ModConfig.isTimeLimitEnforcementEnabled()
 		);
 	}
@@ -111,6 +115,7 @@ public final class TimeLimitManager {
 				+ " | Remaining: " + formatDuration(snapshot.remainingMillis())
 				+ " | Bypass: " + snapshot.bypass()
 				+ " | System: " + (snapshot.systemEnabled() ? "enabled" : "disabled")
+				+ " | Effective: " + (snapshot.effectiveSystemEnabled() ? "active" : "paused")
 				+ " | Enforcement: " + (snapshot.enforcementEnabled() ? "enabled" : "disabled")
 		);
 	}
@@ -147,7 +152,7 @@ public final class TimeLimitManager {
 			return;
 		}
 
-		if (ModConfig.isTimeLimitSystemEnabled() && !isBypassed(server, player)) {
+		if (isTimeLimitSystemActiveNow() && !isBypassed(server, player)) {
 			TimeLimitSnapshot snapshot = getSnapshot(server, player.getUUID());
 			player.sendSystemMessage(Component.literal(
 				"Today's remaining time: " + formatDuration(snapshot.remainingMillis()) + " (" + snapshot.category().name() + ")."
@@ -179,7 +184,7 @@ public final class TimeLimitManager {
 		long previous = SESSION_LAST_UPDATE.getOrDefault(player.getUUID(), now);
 		SESSION_LAST_UPDATE.put(player.getUUID(), now);
 
-		if (!ModConfig.isTimeLimitSystemEnabled() || isBypassed(server, player)) {
+		if (!isTimeLimitSystemActiveNow() || isBypassed(server, player)) {
 			return;
 		}
 
@@ -200,7 +205,7 @@ public final class TimeLimitManager {
 	}
 
 	private static boolean shouldEnforce(MinecraftServer server, ServerPlayer player) {
-		if (!ModConfig.isTimeLimitSystemEnabled() || !ModConfig.isTimeLimitEnforcementEnabled() || isBypassed(server, player)) {
+		if (!isTimeLimitSystemActiveNow() || !ModConfig.isTimeLimitEnforcementEnabled() || isBypassed(server, player)) {
 			return false;
 		}
 
@@ -239,6 +244,33 @@ public final class TimeLimitManager {
 		return LocalDate.now(zoneId);
 	}
 
+	public static boolean isTimeLimitSystemActiveNow() {
+		return ModConfig.isTimeLimitSystemEnabled() && !isWithinWeeklyPauseWindow();
+	}
+
+	public static boolean isWithinWeeklyPauseWindow() {
+		if (!ModConfig.isTimeLimitWeeklyPauseEnabled()) {
+			return false;
+		}
+
+		LocalDateTime now = LocalDateTime.now(zoneId);
+		int currentSecond = toWeekSecond(now.getDayOfWeek(), now.toLocalTime());
+		int startSecond = toWeekSecond(parseDayOfWeek(ModConfig.getTimeLimitWeeklyPauseStartDay(), DayOfWeek.FRIDAY),
+			parseLocalTime(ModConfig.getTimeLimitWeeklyPauseStartTime(), LocalTime.of(18, 0)));
+		int endSecond = toWeekSecond(parseDayOfWeek(ModConfig.getTimeLimitWeeklyPauseEndDay(), DayOfWeek.MONDAY),
+			parseLocalTime(ModConfig.getTimeLimitWeeklyPauseEndTime(), LocalTime.MIDNIGHT));
+
+		if (startSecond == endSecond) {
+			return false;
+		}
+
+		if (startSecond < endSecond) {
+			return currentSecond >= startSecond && currentSecond < endSecond;
+		}
+
+		return currentSecond >= startSecond || currentSecond < endSecond;
+	}
+
 	private static ZoneId resolveZoneId() {
 		try {
 			return ZoneId.of(ModConfig.getTimeLimitTimezone());
@@ -261,5 +293,26 @@ public final class TimeLimitManager {
 	private static PlayerTimeData getData(MinecraftServer server, UUID playerUuid) {
 		ensureStorage(server);
 		return storage.getOrCreate(playerUuid);
+	}
+
+	private static DayOfWeek parseDayOfWeek(String rawValue, DayOfWeek fallback) {
+		try {
+			return DayOfWeek.valueOf(rawValue.trim().toUpperCase());
+		} catch (IllegalArgumentException | NullPointerException ignored) {
+			return fallback;
+		}
+	}
+
+	private static LocalTime parseLocalTime(String rawValue, LocalTime fallback) {
+		try {
+			return LocalTime.parse(rawValue.trim());
+		} catch (DateTimeException | NullPointerException ignored) {
+			return fallback;
+		}
+	}
+
+	private static int toWeekSecond(DayOfWeek dayOfWeek, LocalTime localTime) {
+		int dayIndex = dayOfWeek.getValue() - 1;
+		return dayIndex * 86_400 + localTime.toSecondOfDay();
 	}
 }
