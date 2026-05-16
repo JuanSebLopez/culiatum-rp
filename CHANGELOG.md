@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.8
+
+- Added `Police Baton` as a police control item using the vanilla `stick` texture
+- Added baton hit effects with light control-focused debuffs
+- Added anvil support for carrying over creative-level enchantments from an already-overcapped donor item
+- Kept the enchanting table unchanged while expanding only anvil behavior
+
 ## 0.1.7
 
 - Added named `Home Setter` support so admins can create setters such as `Casa` or `Checkpoint`

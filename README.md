@@ -4,7 +4,7 @@
 
 ## Project Status
 
-- Current version: `0.1.7-alpha`
+- Current version: `0.1.8-alpha`
 - Target loader: `Fabric Loader 0.18.4`
 - Target Java version: `21`
 - Compatible with `Mod Menu` through metadata in `fabric.mod.json`
@@ -21,8 +21,10 @@
 - Command cooldown handling for `/tpa`, `/spawn`, and `/home`
 - A `Home Setter` item for setting named homes by right-click
 - `Handcuffs` for temporary police detainment
+- A `Police Baton` for light police crowd-control on hit
 - Forced PvP event controls for individual players and global events
 - A real-time daily playtime limit system with persistent player tracking
+- Anvil-only support for carrying over existing creative-level enchantments
 - Basic configuration through `config/culiatum-rp.properties`
 
 ## Mod Vision
@@ -53,6 +55,7 @@ The command-editable systems currently start with:
 /culiatumrp radar status <hunter>
 /culiatumrp homesetter give <player> [name]
 /culiatumrp handcuffs give <player>
+/culiatumrp baton give <player>
 /culiatumrp pvp enable <player>
 /culiatumrp pvp disable <player>
 /culiatumrp pvp enableall
@@ -124,6 +127,12 @@ Important variables currently exposed there include:
 
 - `home_setter`: admin item flow for setting named homes
 - `handcuffs`: temporary detainment item using the vanilla `lead` texture
+- `police_baton`: light police control item using the vanilla `stick` texture
+
+### Enchanting behavior
+
+- creative-level enchantments can be carried forward through the anvil only when the donor item already has the higher level
+- enchanting table behavior remains vanilla
 
 ### Daily time-limit system
 
@@ -169,5 +178,5 @@ For new work, the preferred flow is to develop from dedicated `worktrees` and me
 The remapped jar is generated at:
 
 ```text
-build/libs/culiatum-rp-0.1.7.jar
+build/libs/culiatum-rp-0.1.8.jar
 ```

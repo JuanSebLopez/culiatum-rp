@@ -3,6 +3,7 @@
   "package": "com.culiatum.rp.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "AnvilMenuMixin",
     "PotionBrewingMixin",
     "ServerGamePacketListenerImplMixin"
   ],

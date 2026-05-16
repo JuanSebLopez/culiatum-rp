@@ -58,6 +58,11 @@ public final class ModCommands {
 				.then(Commands.argument("player", EntityArgument.player())
 					.executes(ModCommands::giveHandcuffs))));
 
+		root.then(Commands.literal("baton")
+			.then(Commands.literal("give")
+				.then(Commands.argument("player", EntityArgument.player())
+					.executes(ModCommands::givePoliceBaton))));
+
 		root.then(Commands.literal("pvp")
 			.then(Commands.literal("enable")
 				.then(Commands.argument("player", EntityArgument.player())
@@ -176,6 +181,18 @@ public final class ModCommands {
 		}
 
 		context.getSource().sendSuccess(() -> Component.literal("Handcuffs given to " + player.getName().getString() + "."), true);
+		return 1;
+	}
+
+	private static int givePoliceBaton(CommandContext<CommandSourceStack> context) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+		ServerPlayer player = EntityArgument.getPlayer(context, "player");
+		ItemStack stack = new ItemStack(ModItems.POLICE_BATON);
+
+		if (!player.addItem(stack)) {
+			player.drop(stack, false);
+		}
+
+		context.getSource().sendSuccess(() -> Component.literal("Police Baton given to " + player.getName().getString() + "."), true);
 		return 1;
 	}
 
