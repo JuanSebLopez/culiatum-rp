@@ -21,6 +21,9 @@ public final class ModItems {
 	public static final Item HOME_SETTER = register("home_setter", new HomeSetterItem(createProperties("home_setter")
 		.stacksTo(16)
 		.rarity(Rarity.UNCOMMON)));
+	public static final Item HANDCUFFS = register("handcuffs", new HandcuffsItem(createProperties("handcuffs")
+		.stacksTo(1)
+		.rarity(Rarity.UNCOMMON)));
 
 	private ModItems() {
 	}
@@ -39,6 +42,7 @@ public final class ModItems {
 	public static void register() {
 		ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.TOOLS_AND_UTILITIES).register(entries -> entries.accept(RADAR));
 		ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.TOOLS_AND_UTILITIES).register(entries -> entries.accept(HOME_SETTER));
+		ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.TOOLS_AND_UTILITIES).register(entries -> entries.accept(HANDCUFFS));
 		ItemGroupEvents.modifyEntriesEvent(CreativeModeTabs.FOOD_AND_DRINKS).register(entries -> entries.accept(RECALL_POTION));
 	}
 }

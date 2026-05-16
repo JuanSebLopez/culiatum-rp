@@ -5,6 +5,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
+import com.culiatum.rp.item.HomeSetterItem;
 import com.culiatum.rp.item.ModItems;
 import com.culiatum.rp.radar.RadarManager;
 import com.culiatum.rp.timelimit.TimeLimitCommands;
@@ -24,46 +25,56 @@ public final class ModCommands {
 	public static void register(CommandDispatcher<CommandSourceStack> dispatcher,
 								net.minecraft.commands.CommandBuildContext buildContext,
 								Commands.CommandSelection environment) {
-		dispatcher.register(
-			Commands.literal("culiatumrp")
-				.requires(ModCommands::isAdminSource)
-				.then(Commands.literal("radar")
-					.then(Commands.literal("give")
-						.then(Commands.argument("player", EntityArgument.player())
-							.executes(ModCommands::giveRadar)))
-					.then(Commands.literal("set")
-						.then(Commands.argument("hunter", EntityArgument.player())
-							.then(Commands.argument("target", EntityArgument.player())
-								.then(Commands.argument("minutes", IntegerArgumentType.integer(1))
-									.executes(ModCommands::setAssignment)
-									.then(Commands.argument("label", StringArgumentType.greedyString())
-										.executes(ModCommands::setAssignmentWithLabel))))))
-					.then(Commands.literal("clear")
-						.then(Commands.argument("hunter", EntityArgument.player())
-							.executes(ModCommands::clearAssignment)))
-					.then(Commands.literal("status")
-						.then(Commands.argument("hunter", EntityArgument.player())
-							.executes(ModCommands::showStatus))))
-				.then(Commands.literal("homesetter")
-					.then(Commands.literal("give")
-						.then(Commands.argument("player", EntityArgument.player())
-							.executes(ModCommands::giveHomeSetter))))
-				.then(Commands.literal("pvp")
-					.then(Commands.literal("enable")
-						.then(Commands.argument("player", EntityArgument.player())
-							.executes(context -> setForcedPvp(context, true))))
-					.then(Commands.literal("disable")
-						.then(Commands.argument("player", EntityArgument.player())
-							.executes(context -> setForcedPvp(context, false))))
-					.then(Commands.literal("enableall")
-						.executes(context -> setGlobalForcedPvp(context, true)))
-					.then(Commands.literal("disableall")
-						.executes(context -> setGlobalForcedPvp(context, false)))
-					.then(Commands.literal("status")
-						.then(Commands.argument("player", EntityArgument.player())
-							.executes(ModCommands::showPvpStatus))))
-				.then(TimeLimitCommands.create())
-		);
+		var root = Commands.literal("culiatumrp")
+			.requires(ModCommands::isAdminSource);
+
+		root.then(Commands.literal("radar")
+			.then(Commands.literal("give")
+				.then(Commands.argument("player", EntityArgument.player())
+					.executes(ModCommands::giveRadar)))
+			.then(Commands.literal("set")
+				.then(Commands.argument("hunter", EntityArgument.player())
+					.then(Commands.argument("target", EntityArgument.player())
+						.then(Commands.argument("minutes", IntegerArgumentType.integer(1))
+							.executes(ModCommands::setAssignment)
+							.then(Commands.argument("label", StringArgumentType.greedyString())
+								.executes(ModCommands::setAssignmentWithLabel))))))
+			.then(Commands.literal("clear")
+				.then(Commands.argument("hunter", EntityArgument.player())
+					.executes(ModCommands::clearAssignment)))
+			.then(Commands.literal("status")
+				.then(Commands.argument("hunter", EntityArgument.player())
+					.executes(ModCommands::showStatus))));
+
+		root.then(Commands.literal("homesetter")
+			.then(Commands.literal("give")
+				.then(Commands.argument("player", EntityArgument.player())
+					.executes(ModCommands::giveHomeSetter)
+					.then(Commands.argument("name", StringArgumentType.greedyString())
+						.executes(ModCommands::giveNamedHomeSetter)))));
+
+		root.then(Commands.literal("handcuffs")
+			.then(Commands.literal("give")
+				.then(Commands.argument("player", EntityArgument.player())
+					.executes(ModCommands::giveHandcuffs))));
+
+		root.then(Commands.literal("pvp")
+			.then(Commands.literal("enable")
+				.then(Commands.argument("player", EntityArgument.player())
+					.executes(context -> setForcedPvp(context, true))))
+			.then(Commands.literal("disable")
+				.then(Commands.argument("player", EntityArgument.player())
+					.executes(context -> setForcedPvp(context, false))))
+			.then(Commands.literal("enableall")
+				.executes(context -> setGlobalForcedPvp(context, true)))
+			.then(Commands.literal("disableall")
+				.executes(context -> setGlobalForcedPvp(context, false)))
+			.then(Commands.literal("status")
+				.then(Commands.argument("player", EntityArgument.player())
+					.executes(ModCommands::showPvpStatus))));
+
+		root.then(TimeLimitCommands.create());
+		dispatcher.register(root);
 
 		dispatcher.register(
 			Commands.literal("vote")
@@ -131,13 +142,40 @@ public final class ModCommands {
 
 	private static int giveHomeSetter(CommandContext<CommandSourceStack> context) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
 		ServerPlayer player = EntityArgument.getPlayer(context, "player");
-		ItemStack stack = new ItemStack(ModItems.HOME_SETTER);
+		ItemStack stack = HomeSetterItem.createStack(ModItems.HOME_SETTER, "Casa");
 
 		if (!player.addItem(stack)) {
 			player.drop(stack, false);
 		}
 
 		context.getSource().sendSuccess(() -> Component.literal("Home Setter given to " + player.getName().getString() + "."), true);
+		return 1;
+	}
+
+	private static int giveNamedHomeSetter(CommandContext<CommandSourceStack> context) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+		ServerPlayer player = EntityArgument.getPlayer(context, "player");
+		String homeName = StringArgumentType.getString(context, "name").trim();
+		ItemStack stack = HomeSetterItem.createStack(ModItems.HOME_SETTER, homeName);
+
+		if (!player.addItem(stack)) {
+			player.drop(stack, false);
+		}
+
+		context.getSource().sendSuccess(() -> Component.literal(
+			"Home Setter for \"" + (homeName.isEmpty() ? "Casa" : homeName) + "\" given to " + player.getName().getString() + "."
+		), true);
+		return 1;
+	}
+
+	private static int giveHandcuffs(CommandContext<CommandSourceStack> context) throws com.mojang.brigadier.exceptions.CommandSyntaxException {
+		ServerPlayer player = EntityArgument.getPlayer(context, "player");
+		ItemStack stack = new ItemStack(ModItems.HANDCUFFS);
+
+		if (!player.addItem(stack)) {
+			player.drop(stack, false);
+		}
+
+		context.getSource().sendSuccess(() -> Component.literal("Handcuffs given to " + player.getName().getString() + "."), true);
 		return 1;
 	}
 

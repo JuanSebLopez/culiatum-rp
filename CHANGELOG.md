@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.7
+
+- Added named `Home Setter` support so admins can create setters such as `Casa` or `Checkpoint`
+- Added `Handcuffs` as a police item using the vanilla `lead` texture
+- Added timed handcuff application with a centered progress bar and temporary detained state
+
 ## 0.1.6
 
 - Added offline player resolution by cached player name for time-limit administration

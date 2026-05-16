@@ -19,6 +19,9 @@
 		"main": [
 			"com.culiatum.rp.CuliatumRpMod"
 		],
+		"client": [
+			"com.culiatum.rp.client.CuliatumRpClient"
+		],
 		"jei_mod_plugin": [
 			"com.culiatum.rp.compat.jei.CuliatumRpJeiPlugin"
 		]

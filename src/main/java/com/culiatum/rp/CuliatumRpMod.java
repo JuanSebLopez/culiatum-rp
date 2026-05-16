@@ -2,6 +2,7 @@ package com.culiatum.rp;
 
 import com.culiatum.rp.command.ModCommands;
 import com.culiatum.rp.item.ModItems;
+import com.culiatum.rp.police.HandcuffsManager;
 import com.culiatum.rp.pvp.CombatManager;
 import com.culiatum.rp.radar.RadarManager;
 import com.culiatum.rp.timelimit.TimeLimitManager;
@@ -36,6 +37,7 @@ public final class CuliatumRpMod implements ModInitializer {
 		CommandBlocker.initialize();
 		VillagerTradeBlocker.initialize();
 		RadarManager.initialize();
+		HandcuffsManager.initialize();
 		TimeLimitManager.initialize();
 		ServerTickEvents.END_SERVER_TICK.register(TimeVoteManager::tick);
 	}
